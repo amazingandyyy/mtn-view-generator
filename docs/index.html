@@ -23,7 +23,7 @@
         alert('請輸入活動鏈結及搶票時間');
       }else{
         url = url.replace('https://www.tycs.com.tw/event/', '');
-        const datetime = time.replace('T', ' ');
+        const datetime = time.replace('T', ' ').replace('-', '/');
         document.querySelector('#command').innerHTML = `mtn-view ${url} ${datetime}`;
       }
     }
