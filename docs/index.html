@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>搶票指令產生器</title>
+</head>
+<body>
+  <h1>搶票指令產生器</h1>
+  <p>前往 <a href='https://www.tycs.com.tw/EventList' target='_blank'>https://www.tycs.com.tw/EventList</a> 找想要搶票的行程</p>
+  貼上活動鏈結：<input type='url' style='width: 60%'/>
+  <br />
+  選擇搶票時間：<input type='datetime-local'/>
+  <br />
+  <button onclick='generate();'>產生指令</button>
+  
+  <pre style='background-color: grey; font-size: 1.4rem' id='command'></pre>
+  <script>
+    function generate() {
+      let url = document.querySelector('input[type="url"]').value;
+      const time = document.querySelector('input[type="datetime-local"]').value;
+      if(!url || !time){
+        alert('請輸入活動鏈結及搶票時間');
+      }else{
+        url = url.replace('https://www.tycs.com.tw/event/', '');
+        const datetime = time.replace('T', ' ').replace("%2F", "/");
+        document.querySelector('#command').innerHTML = `node index.js ${url} ${datetime}`;
+      }
+    }
+  </script>
+</html>
