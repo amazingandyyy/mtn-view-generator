@@ -3,22 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>搶票指令產生器</title>
+  <title>搶票指令產生器 2.0</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+  </style>
 </head>
 <body>
-  <h1>搶票指令產生器</h1>
+  <h1>搶票指令產生器 2.0</h1>
   <p>前往 <a href='https://www.tycs.com.tw/EventList' target='_blank'>https://www.tycs.com.tw/EventList</a> 找想要搶票的行程</p>
-  貼上活動鏈結：<input type='url' style='width: 60%'/>
+  <b>活動鏈結：<input type='url' style='width: 60%'/></b>
   <br />
-  選擇搶票時間：<input type='datetime-local'/>
+  <small>(範例：https://www.tycs.com.tw/event/1654)</small>
   <br />
-  <button onclick='generate();'>產生指令</button>
+  
+  <b>選擇搶票時間：<input type='datetime-local' id="cal"/></b>
+  <br />
+  <button style="margin-top: 10px; display: block; font-size: 2rem;"onclick='generate();'>產生指令 🚀</button>
   
   <h3>打開中端機</h3>
   <img src="./terminal-screenshot.png" width='400px' />
   <h4>複製以下指令並到終端機貼上執行</h4>
-  <pre style='background-color: grey; font-size: 1.4rem' id='command'></pre>
+  <pre style='background-color: grey; font-size: 2rem' id='command'></pre>
   <script>
+    window.addEventListener('load', () => {
+      var now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
+      /* remove second/millisecond if needed - credit ref. https://stackoverflow.com/questions/24468518/html5-input-datetime-local-default-value-of-today-and-current-time#comment112871765_60884408 */
+      now.setMilliseconds(null)
+      now.setSeconds(null)
+      const t = now.toISOString().slice(0, -1).split("T")[0];
+      console.log()
+      document.getElementById('cal').value = `${t}T20:00`;
+    });
     function generate() {
       let url = document.querySelector('input[type="url"]').value;
       const time = document.querySelector('input[type="datetime-local"]').value;
@@ -27,7 +46,7 @@
       }else{
         url = url.replace('https://www.tycs.com.tw/event/', '');
         const datetime = time.replace('T', ' ').replaceAll('-', '/');
-        document.querySelector('#command').innerHTML = `mtn-view ${url} ${datetime}`;
+        document.querySelector('#command').innerHTML = `mtn-view ${url} ${datetime}:00`;
       }
     }
   </script>
