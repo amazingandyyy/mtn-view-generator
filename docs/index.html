@@ -13,7 +13,7 @@
 <body>
   <h1>搶票指令產生器 3.0</h1>
   <p>前往 <a href='https://www.tycs.com.tw/EventList' target='_blank'>https://www.tycs.com.tw/EventList</a> 找想要搶票的行程</p>
-  <b>活動號碼：<input style='width: 60%'/></b>
+  <b>活動號碼：<input name="eventNumber" style='width: 60%'/></b>
   <br />
   <small>(範例：https://www.tycs.com.tw/event/1654) ---> 活動號碼就是 1654</small>
   <br />
@@ -39,7 +39,7 @@
       document.getElementById('cal').value = `${t}T20:00`;
     });
     function generate() {
-      let eventNumber = document.querySelector('input[type="number"]').value;
+      let eventNumber = document.querySelector('input[name="eventNumber"]').value;
       const time = document.querySelector('input[type="datetime-local"]').value;
       if(!eventNumber || !time){
         alert('請輸入活動號碼及搶票時間');
