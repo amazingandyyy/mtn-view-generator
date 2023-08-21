@@ -13,9 +13,9 @@
 <body>
   <h1>搶票指令產生器 2.0</h1>
   <p>前往 <a href='https://www.tycs.com.tw/EventList' target='_blank'>https://www.tycs.com.tw/EventList</a> 找想要搶票的行程</p>
-  <b>活動鏈結：<input type='url' style='width: 60%'/></b>
+  <b>活動號碼：<input style='width: 60%'/></b>
   <br />
-  <small>(範例：https://www.tycs.com.tw/event/1654)</small>
+  <small>(範例：https://www.tycs.com.tw/event/1654) ---> 活動號碼就是 1654</small>
   <br />
   
   <b>選擇搶票時間：<input type='datetime-local' id="cal"/></b>
@@ -39,14 +39,14 @@
       document.getElementById('cal').value = `${t}T20:00`;
     });
     function generate() {
-      let url = document.querySelector('input[type="url"]').value;
+      let eventNumber = document.querySelector('input[type="number"]').value;
       const time = document.querySelector('input[type="datetime-local"]').value;
-      if(!url || !time){
-        alert('請輸入活動鏈結及搶票時間');
+      if(!eventNumber || !time){
+        alert('請輸入活動號碼及搶票時間');
       }else{
-        url = url.replace('https://www.tycs.com.tw/event/', '');
+        eventNumber = eventNumber.replace('https://www.tycs.com.tw/event/', '');
         const datetime = time.replace('T', ' ').replaceAll('-', '/');
-        document.querySelector('#command').innerHTML = `mtn-view ${url} ${datetime}:00`;
+        document.querySelector('#command').innerHTML = `mtn-view ${eventNumber} ${datetime}:00`;
       }
     }
   </script>
