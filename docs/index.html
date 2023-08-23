@@ -3,29 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>搶票指令產生器 3.0.1</title>
+  <title>搶票指令產生器 3.2.0</title>
   <style>
     body {
       font-family: sans-serif;
     }
   </style>
 </head>
-<body>
-  <h1>搶票指令產生器 3.0.1</h1>
+<body style='text-align: center; font-size: 1.4rem;'>
+  <h1>搶票指令產生器 3.2.0</h1>
   <p>前往 <a href='https://www.tycs.com.tw/EventList' target='_blank'>https://www.tycs.com.tw/EventList</a> 找想要搶票的行程</p>
-  <b>活動號碼：<input name="eventNumber" style='width: 60%'/></b>
+  <div>
+    <b>活動號碼或網址</b>
+  </div>
+  <input name="eventNumber" style='padding: 10px; width: 60%'/>
   <br />
-  <small>(範例：https://www.tycs.com.tw/event/1654) ---> 活動號碼就是 1654</small>
+  <small>範例網址：https://www.tycs.com.tw/event/1654</small>
+  <small>範例號碼：1654</small>
+  <br />
   <br />
   
-  <b>選擇搶票時間：<input type='datetime-local' id="cal"/></b>
+  <div>
+    <b>選擇搶票時間</b>
+  </div>
+  <input type='datetime-local' id="cal" style='padding: 10px;'/>
   <br />
-  <button style="margin-top: 10px; display: block; font-size: 2rem;"onclick='generate();'>產生指令 🚀</button>
+  <br />
+  <button style="margin-top: 10px; margin: auto; display: block; font-size: 2rem;"onclick='generate();'>產生指令 🚀</button>
   
-  <h3>打開中端機</h3>
-  <img src="./terminal-screenshot.png" width='400px' />
-  <h4>複製以下指令並到終端機貼上執行</h4>
-  <pre style='background-color: grey; font-size: 2rem' id='command'></pre>
+  <!-- <h3>打開中端機</h3>
+  <img src="./terminal-screenshot.png" width='400px' /> -->
+  <h4 style='display: none' id='copy-text'>複製以下指令並到終端機貼上執行</h4>
+  <pre style='background: #74747400; font-size: 1rem' id='command'></pre>
+  <button id='copy-btn' style='margin: auto; margin-top: 10px; font-size: 2rem; display: none' onclick='copy()'>複製</button>
   <script>
     window.addEventListener('load', () => {
       var now = new Date();
@@ -47,7 +57,30 @@
         eventNumber = eventNumber.replace('https://www.tycs.com.tw/event/', '');
         const datetime = time.replace('T', ' ').replaceAll('-', '/');
         document.querySelector('#command').innerHTML = `mtn-view ${eventNumber} ${datetime}:00`;
+        document.querySelector('#copy-btn').style.display = 'block';
+        document.querySelector('#copy-text').style.display = 'block';
       }
+    }
+    function copy() {
+      const content = document.querySelector('#command').innerHTML
+      // copy content to clip board
+      navigator.clipboard.writeText(content).then(() => {
+        document.querySelector('#copy-btn').innerHTML = '已複製!';
+        document.querySelector('#copy-btn').style.color = 'green';
+        document.querySelector('#copy-btn').style.opacity = '40%';
+        document.querySelector('#command').style.color = 'green';
+        document.querySelector('#command').style.opacity = '40%';
+        // change it back after 3 seconds
+        setTimeout(() => {
+          document.querySelector('#copy-btn').innerHTML = '複製';
+          document.querySelector('#copy-btn').style.color = 'black';
+          document.querySelector('#copy-btn').style.opacity = '100%';
+          document.querySelector('#command').style.color = 'black';
+          document.querySelector('#command').style.opacity = '100%';
+        }, 2000);
+      }, () => {
+        alert('複製失敗');
+      });
     }
   </script>
 </html>
