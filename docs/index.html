@@ -15,12 +15,15 @@
       -o-background-size: cover;
       background-size: cover;
     }
+    a {
+      color: green;
+    }
   </style>
 </head>
 <body style='text-align: center; font-size: 1.2rem;'>
-  <div style='background-color:rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); border-radius: 10px; padding: 10px; padding-bottom: 20px;'>
+  <div style='background-color:rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border-radius: 10px; padding: 10px; padding-bottom: 20px;'>
     <h1>搶票指令產生器 <small>v3.2.0</small></h1>
-    <p>前往 <a href='https://www.tycs.com.tw/EventList' target='_blank'>https://www.tycs.com.tw/EventList</a> 找想要搶票的行程</p>
+    <p>前往 <a href='https://www.tycs.com.tw/EventList' target='_blank'>桃園市晟崧休閒登山會</a> 找想要搶票的行程</p>
     <div>
       <b>活動號碼或網址</b>
     </div>
@@ -37,13 +40,15 @@
     <input type='datetime-local' id="cal" style='padding: 10px;'/>
     <br />
     <br />
-    <button style="margin-top: 10px; margin: auto; display: block; font-size: 2rem;"onclick='generate();'>產生並複製指令 🚀</button>
+    <button style="margin-top: 10px; margin: auto; display: block; font-size: 2rem;"onclick='generate();'>產生 🚀</button>
     
     <!-- <h3>打開中端機</h3>
     <img src="./terminal-screenshot.png" width='400px' /> -->
     <!-- <h4 style='display: none' id='copy-text'>複製以下指令並到終端機貼上執行</h4> -->
-    <pre style='background: #74747400; font-size: 1rem; font-weight: bold;' id='command'></pre>
-    <button id='copy-btn' style='margin: auto; margin-top: 10px; font-size: 1rem; display: none' onclick='copy()'>複製 ⛰️</button>
+    <pre style='background: #747474; font-size: 1rem; font-weight: bold; display: inline-block' id='command'></pre>
+    <button id='copy-btn' style='margin: auto; margin-top: 10px; font-size: 1rem; display: none' onclick='copy()'>複製搶票指令 ⛰️</button>
+    <hr/>
+    <button id='upgrade-btn' style='margin: auto; margin-top: 10px; font-size: 1rem;' onclick='copyUpgrade()'>升級最新版本 📈</button>
   </div>
   <script>
     window.addEventListener('load', () => {
@@ -68,24 +73,47 @@
         document.querySelector('#command').innerHTML = cmd;
         document.querySelector('#copy-btn').style.display = 'block';
         // document.querySelector('#copy-text').style.display = 'block';
-        copy(cmd)
+        // copy(cmd)
       }
     }
     function copy(text) {
       const content = text || document.querySelector('#command').innerHTML
       // copy content to clip board
       navigator.clipboard.writeText(content).then(() => {
-        document.querySelector('#copy-btn').innerHTML = '已複製!';
+        document.querySelector('#copy-btn').innerHTML = '已複製搶票指令 ⛰️';
         document.querySelector('#copy-btn').style.color = 'green';
-        document.querySelector('#copy-btn').style.opacity = '80%';
-        document.querySelector('#command').style.color = 'green';
+        document.querySelector('#command').style.opacity = '50%';
         // change it back after 3 seconds
         setTimeout(() => {
-          document.querySelector('#copy-btn').innerHTML = '複製';
+          document.querySelector('#copy-btn').innerHTML = '複製搶票指令 ⛰️';
           document.querySelector('#copy-btn').style.color = 'black';
           document.querySelector('#copy-btn').style.opacity = '100%';
           document.querySelector('#command').style.color = 'black';
           document.querySelector('#command').style.opacity = '100%';
+        }, 2000);
+      }, () => {
+        alert('複製失敗');
+      });
+    }
+    function copyUpgrade() {
+      const content = `
+pushd ~/Desktop/mtn-view
+curl -sL https://amazingandyyy.com/mtn-view-generator/index.js > ~/Desktop/mtn-view/index.js
+rm -rf $(which mtn-view) && npm i -g . --force
+which mtn-view
+echo "前往: https://amazingandyyy.com/mtn-view-generator"
+popd
+      `
+      // copy content to clip board
+      navigator.clipboard.writeText(content).then(() => {
+        document.querySelector('#upgrade-btn').innerHTML = '已複製升級指令 📈';
+        document.querySelector('#upgrade-btn').style.color = 'green';
+        document.querySelector('#upgrade-btn').style.opacity = '80%';
+        // change it back after 3 seconds
+        setTimeout(() => {
+          document.querySelector('#upgrade-btn').innerHTML = '升級最新版本 📈';
+          document.querySelector('#upgrade-btn').style.color = 'black';
+          document.querySelector('#upgrade-btn').style.opacity = '100%';
         }, 2000);
       }, () => {
         alert('複製失敗');
