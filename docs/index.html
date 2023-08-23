@@ -42,7 +42,7 @@
     <!-- <h3>打開中端機</h3>
     <img src="./terminal-screenshot.png" width='400px' /> -->
     <!-- <h4 style='display: none' id='copy-text'>複製以下指令並到終端機貼上執行</h4> -->
-    <pre style='background: #74747400; font-size: 1rem' id='command'></pre>
+    <pre style='background: #74747400; font-size: 1rem; font-weight: bold;' id='command'></pre>
     <button id='copy-btn' style='margin: auto; margin-top: 10px; font-size: 1rem; display: none' onclick='copy()'>複製 ⛰️</button>
   </div>
   <script>
@@ -64,7 +64,7 @@
       }else{
         eventNumber = eventNumber.replace('https://www.tycs.com.tw/event/', '');
         const datetime = time.replace('T', ' ').replaceAll('-', '/');
-        const cmd = `mtn-view ${eventNumber} ${datetime}:00`
+        const cmd = `mtn-view ${eventNumber} ${datetime}:01`
         document.querySelector('#command').innerHTML = cmd;
         document.querySelector('#copy-btn').style.display = 'block';
         // document.querySelector('#copy-text').style.display = 'block';
@@ -79,7 +79,6 @@
         document.querySelector('#copy-btn').style.color = 'green';
         document.querySelector('#copy-btn').style.opacity = '80%';
         document.querySelector('#command').style.color = 'green';
-        document.querySelector('#command').style.opacity = '80%';
         // change it back after 3 seconds
         setTimeout(() => {
           document.querySelector('#copy-btn').innerHTML = '複製';
