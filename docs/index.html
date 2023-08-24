@@ -96,14 +96,7 @@
       });
     }
     function copyUpgrade() {
-      const content = `
-pushd ~/Desktop/mtn-view
-curl -sL https://amazingandyyy.com/mtn-view-generator/index.js > ~/Desktop/mtn-view/index.js
-rm -rf $(which mtn-view) && npm i -g . --force
-which mtn-view
-echo "前往: https://amazingandyyy.com/mtn-view-generator"
-popd
-      `
+      const content = 'curl https://raw.githubusercontent.com/amazingandyyy/mtn-view-generator/main/docs/install.sh -sL | sudo bash -'
       // copy content to clip board
       navigator.clipboard.writeText(content).then(() => {
         document.querySelector('#upgrade-btn').innerHTML = '已複製升級指令 📈';
