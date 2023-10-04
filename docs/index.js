@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const playwright = require('playwright');
 const axios = require('axios');
 const users = require('./users.js')
