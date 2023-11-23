@@ -4,13 +4,13 @@ const playwright = require('playwright');
 const axios = require('axios');
 const users = require('./users.js')
 const cheerio = require('cheerio');
-
+let targetTimestamp = 0;
 const DELAY_SECONDS = 0.5;
 const api = axios.create({
   baseURL: "https://www.tycs.com.tw",
   withCredentials: true,
   headers: {
-      "Content-type": "application/json",
+    "Content-type": "application/json",
   },
 });
 
@@ -47,8 +47,8 @@ async function getLoginCode(cookie, user) {
     method: 'post',
     maxBodyLength: Infinity,
     url: 'https://www.tycs.com.tw/AJAX/account_AJAX.ashx',
-    headers: { 
-      'Cookie': cookie, 
+    headers: {
+      'Cookie': cookie,
       ...data.getHeaders()
     },
     data : data
@@ -71,8 +71,8 @@ async function loginUser(cookie, code, user) {
     method: 'post',
     maxBodyLength: Infinity,
     url: 'https://www.tycs.com.tw/AJAX/account_AJAX.ashx',
-    headers: { 
-      'Cookie': cookie, 
+    headers: {
+      'Cookie': cookie,
       ...data.getHeaders()
     },
     data : data
@@ -81,7 +81,25 @@ async function loginUser(cookie, code, user) {
   return response.data
 }
 
-async function signUpEvent({cookie, eventNumber, viewState, viewStateGenerator}) {
+// const txtPlaces = ["16", "21", "17", "19"]
+// const txtPlacesText = {
+//   16:  "中壢藝術館",
+//   21:  "平鎮圖書館",
+//   17:  "平鎮區公所",
+//   19:  "中壢健保局"
+// }
+const txtPlaces = ["16", "21", "17", "19"]
+const txtPlacesText = {
+  16:  "中壢藝術館",
+  21:  "平鎮圖書館",
+  17:  "平鎮區公所",
+  19:  "中壢健保局"
+}
+async function signUpEvent(opts) {
+  let {cookie, eventNumber, viewState, viewStateGenerator, txtPlaceIndex} = opts;
+  txtPlaceIndex = txtPlaceIndex || 0
+  if (!txtPlaces[txtPlaceIndex]) return console.log(new Date().toLocaleString(), "報名地點全部失敗", txtPlaceIndex)
+
   console.log(new Date().toLocaleString(), '報名活動', eventNumber)
   const eventPage = `https://www.tycs.com.tw/event/${eventNumber}`
 
@@ -91,91 +109,101 @@ async function signUpEvent({cookie, eventNumber, viewState, viewStateGenerator})
   data.append('__VIEWSTATEGENERATOR', viewStateGenerator);
   data.append('foods', '0');
   data.append('txtRoom', '');
-  data.append('txtPlace', '16');
+  // 16 -> 中壢藝術館
+  // 21 -> 平鎮圖書館
+  // 17 -> 平鎮區公所
+  // 19 -> 中壢健保局
+  console.log(new Date().toLocaleString(), "報名地點", txtPlacesText[txtPlaces[txtPlaceIndex]])
+  data.append('txtPlace', txtPlaces[txtPlaceIndex]);
+  // data.append('txtPlace', '16');
   data.append('TextContactName', '陳文華');
   data.append('TextContactMobile', '0933775311');
   data.append('TextLegalNote', '');
   data.append('debug', '');
 
-let config = {
-  method: 'post',
-  maxBodyLength: Infinity,
-  url: eventPage,
-  headers: { 
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7', 
-      'Accept-Language': 'en-US,en;q=0.9,zh-TW;q=0.8,zh;q=0.7', 
-      'Cache-Control': 'max-age=0', 
-      'Connection': 'keep-alive', 
-      // 'Cookie': 'ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0; _gid=GA1.3.180998747.1692507919; _ga_J5W6ZZ5HB6=GS1.1.1692584205.3.1.1692587817.0.0.0; _ga=GA1.3.1353187623.1692507919; ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0', 
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: eventPage,
+    headers: {
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'Accept-Language': 'en-US,en;q=0.9,zh-TW;q=0.8,zh;q=0.7',
+      'Cache-Control': 'max-age=0',
+      'Connection': 'keep-alive',
+      // 'Cookie': 'ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0; _gid=GA1.3.180998747.1692507919; _ga_J5W6ZZ5HB6=GS1.1.1692584205.3.1.1692587817.0.0.0; _ga=GA1.3.1353187623.1692507919; ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0',
       'Cookie': cookie,
-      'Origin': 'https://www.tycs.com.tw', 
-      'Referer': `https://www.tycs.com.tw/event/${eventNumber}`, 
-      'Sec-Fetch-Dest': 'document', 
-      'Sec-Fetch-Mode': 'navigate', 
-      'Sec-Fetch-Site': 'same-origin', 
-      'Sec-Fetch-User': '?1', 
-      'Upgrade-Insecure-Requests': '1', 
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203', 
-      'sec-ch-ua': '"Not/A)Brand";v="99", "Microsoft Edge";v="115", "Chromium";v="115"', 
-      'sec-ch-ua-mobile': '?0', 
-      'sec-ch-ua-platform': '"macOS"', 
+      'Origin': 'https://www.tycs.com.tw',
+      'Referer': `https://www.tycs.com.tw/event/${eventNumber}`,
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'same-origin',
+      'Sec-Fetch-User': '?1',
+      'Upgrade-Insecure-Requests': '1',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203',
+      'sec-ch-ua': '"Not/A)Brand";v="99", "Microsoft Edge";v="115", "Chromium";v="115"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"macOS"',
       ...data.getHeaders()
     },
     data : data
   };
 
   axios.request(config)
-  .then(async () => {
-    console.log(new Date().toLocaleString(), '完成報名', eventNumber)
-    // await checkSignUpStatus(cookie, eventNumber)
-  })
-  .catch(console.error);
+    .then(async () => {
+      console.log(new Date().toLocaleString(), '完成報名', eventNumber)
+      await checkSignUpStatus(opts)
+    })
+    .catch((err)=>{
+      console.error(err)
+    });
 }
 
-function checkSignUpStatus(cookie, eventNumber) {
+function checkSignUpStatus(opts) {
+  const {cookie, eventNumber, viewState, viewStateGenerator, txtPlaceIndex} = opts;
   const eventPage = `https://www.tycs.com.tw/event/${eventNumber}`
   const config = {
     method: 'get',
     maxBodyLength: Infinity,
     url: eventPage,
     headers: {
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7', 
-      'Accept-Language': 'en-US,en;q=0.9,zh-TW;q=0.8,zh;q=0.7', 
-      'Cache-Control': 'max-age=0', 
-      'Connection': 'keep-alive', 
-      // 'Cookie': 'ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0; _gid=GA1.3.180998747.1692507919; _ga_J5W6ZZ5HB6=GS1.1.1692584205.3.1.1692587817.0.0.0; _ga=GA1.3.1353187623.1692507919; ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0', 
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'Accept-Language': 'en-US,en;q=0.9,zh-TW;q=0.8,zh;q=0.7',
+      'Cache-Control': 'max-age=0',
+      'Connection': 'keep-alive',
+      // 'Cookie': 'ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0; _gid=GA1.3.180998747.1692507919; _ga_J5W6ZZ5HB6=GS1.1.1692584205.3.1.1692587817.0.0.0; _ga=GA1.3.1353187623.1692507919; ASP.NET_SessionId=sasbbkpdb52johv0kyka51q0',
       'Cookie': cookie,
-      'Origin': 'https://www.tycs.com.tw', 
-      'Referer': `https://www.tycs.com.tw/event/${eventNumber}`, 
-      'Sec-Fetch-Dest': 'document', 
-      'Sec-Fetch-Mode': 'navigate', 
-      'Sec-Fetch-Site': 'same-origin', 
-      'Sec-Fetch-User': '?1', 
-      'Upgrade-Insecure-Requests': '1', 
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203', 
-      'sec-ch-ua': '"Not/A)Brand";v="99", "Microsoft Edge";v="115", "Chromium";v="115"', 
-      'sec-ch-ua-mobile': '?0', 
-      'sec-ch-ua-platform': '"macOS"', 
+      'Origin': 'https://www.tycs.com.tw',
+      'Referer': `https://www.tycs.com.tw/event/${eventNumber}`,
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'same-origin',
+      'Sec-Fetch-User': '?1',
+      'Upgrade-Insecure-Requests': '1',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.203',
+      'sec-ch-ua': '"Not/A)Brand";v="99", "Microsoft Edge";v="115", "Chromium";v="115"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"macOS"',
     }
   }
   axios.request(config)
-  .then(async (response) => {
-    const html = response.data
-    const $ = cheerio.load(html);
-    const success = $('.applied-info').val()
-    if(!success) {
-      console.log(new Date().toLocaleString(), '報名失敗，重新報名')
-      return await signUpEvent({cookie, eventNumber, viewState, viewStateGenerator})
-    }
-    console.log(new Date().toLocaleString(), '報名成功', eventNumber)
-  })
-  .catch(console.error);
+    .then(async (response) => {
+      const html = response.data
+      const $ = cheerio.load(html);
+      const success = $('.applied-info').text()
+      console.log(success)
+      if(!success) {
+        console.log(new Date().toLocaleString(), '報名失敗 😔，重新報名')
+        return await signUpEvent({cookie, eventNumber, viewState, viewStateGenerator, txtPlaceIndex: txtPlaceIndex+1})
+      }
+      console.log(new Date().toLocaleString(), success, "🎉前往報名紀錄查看：https://www.tycs.com.tw/OrderList")
+    })
+    .catch(console.error);
 }
 
 async function execUser(cookie, user, eventNumber) {
   const {code2} = await getLoginCode(cookie, user);
   await loginUser(cookie, code2, user);
-  
+
   // new function to count down while waiting for the target time by using set interval
   const interval = setInterval(() => {
     let now = Date.now();
@@ -197,7 +225,7 @@ async function execUser(cookie, user, eventNumber) {
     clearInterval(interval);
     console.log(new Date().toLocaleString(), '')
     console.log(new Date().toLocaleString(), user.name, '開始搶票')
-    return await signUpEvent({cookie, eventNumber, viewState, viewStateGenerator});
+    return await signUpEvent({cookie, eventNumber, viewState, viewStateGenerator, txtPlaceIndex: 0});
   }, timeOut);
   return true;
 }
@@ -210,7 +238,7 @@ async function main() {
   const eventNumber = process.argv[2];
   Promise.all([
     execUser(cookie1, user1, eventNumber),
-    execUser(cookie2, user2, eventNumber)
+    // execUser(cookie2, user2, eventNumber)
   ]).catch(console.error);
 }
 
@@ -221,9 +249,9 @@ if(!process.argv[2] || !process.argv[3] || !process.argv[4]) {
 }
 
 const eventNumber = process.argv[2];
-const targetDateString = `${process.argv[3].split("/").map(d=>Number(d)).map(d=>d>=10?d:`0${d}`).join("-")}T${process.argv[4]}`
+const targetDateString = `${process.argv[3].split("/").map(d=>Number(d)).map(d=>d>10?d:`0${d}`).join("-")}T${process.argv[4]}`
 var date = new Date(targetDateString);
-targetTimestamp = date.getTime(); // override the global targetTimestamp in milliseconds  
+targetTimestamp = date.getTime(); // override the global targetTimestamp in milliseconds
 console.log(new Date().toLocaleString(), '初始化... v2.1.0')
 console.log(new Date().toLocaleString(), '搶位活動: ', `https://www.tycs.com.tw/event/${eventNumber}`)
 console.log(new Date().toLocaleString(), `搶位時間: ${date.toLocaleString()}`)
