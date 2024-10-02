@@ -249,8 +249,10 @@ if(!process.argv[2] || !process.argv[3] || !process.argv[4]) {
 }
 
 const eventNumber = process.argv[2];
-const targetDateString = `${process.argv[3].split("/").map(d=>Number(d)).map(d=>d>10?d:`0${d}`).join("-")}T${process.argv[4]}`
+const targetDateString = `${process.argv[3].split("/").map(d=>Number(d)).map(d=>d>=10?d:`0${d}`).join("-")}T${process.argv[4]}`
+console.log(targetDateString)
 var date = new Date(targetDateString);
+console.log(date)
 targetTimestamp = date.getTime(); // override the global targetTimestamp in milliseconds  
 console.log(new Date().toLocaleString(), '初始化... v2.2.0')
 console.log(new Date().toLocaleString(), '搶位活動: ', `https://www.tycs.com.tw/event/${eventNumber}`)
