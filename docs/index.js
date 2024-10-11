@@ -85,15 +85,17 @@ async function loginUser(cookie, code, user) {
 // const txtPlacesText = {
 //   16:  "中壢藝術館",
 //   21:  "平鎮圖書館",
+//   22:  "自行前往",
 //   17:  "平鎮區公所",
 //   19:  "中壢健保局"
 // }
-const txtPlaces = ["16", "21", "17", "19"]
+const txtPlaces = ["16", "21", "22", "17", "19"]
 const txtPlacesText = {
   16:  "中壢藝術館",
   21:  "平鎮圖書館",
+  22:  "自行前往",
   17:  "平鎮區公所",
-  19:  "中壢健保局"
+  19:  "中壢健保局",
 }
 async function signUpEvent(opts) {
   let {cookie, eventNumber, viewState, viewStateGenerator, txtPlaceIndex} = opts;
@@ -192,10 +194,11 @@ function checkSignUpStatus(opts) {
     const success = $('.applied-info').text()
     console.log(success)
     if(!success) {
-      console.log(new Date().toLocaleString(), '報名失敗 😔，重新報名')
+      console.log(new Date().toLocaleString(), '報名失敗，再次報名')
       return await signUpEvent({cookie, eventNumber, viewState, viewStateGenerator, txtPlaceIndex: txtPlaceIndex+1})
     }
-    console.log(new Date().toLocaleString(), success, "🎉前往報名紀錄查看：https://www.tycs.com.tw/OrderList")
+    console.log(new Date().toLocaleString(), success, "🎉🎉🎉🎉🎉")
+    console.log(new Date().toLocaleString(), "前往報名紀錄查看：https://www.tycs.com.tw/OrderList")
   })
   .catch(console.error);
 }
@@ -231,6 +234,7 @@ async function execUser(cookie, user, eventNumber) {
 }
 
 async function main() {
+  console.log(new Date().toLocaleString(), "DEBUG", ...process.argv)
   const [cookie1, cookie2] = await getContext();
 
   const user1 = users[0]
@@ -249,10 +253,9 @@ if(!process.argv[2] || !process.argv[3] || !process.argv[4]) {
 }
 
 const eventNumber = process.argv[2];
-const targetDateString = `${process.argv[3].split("/").map(d=>Number(d)).map(d=>d>=10?d:`0${d}`).join("-")}T${process.argv[4]}`
-var date = new Date(targetDateString);
+var date = new Date(`${process.argv[3]} ${process.argv[4]}`);
 targetTimestamp = date.getTime(); // override the global targetTimestamp in milliseconds  
-console.log(new Date().toLocaleString(), '初始化... v2.2.0')
+console.log(new Date().toLocaleString(), '初始化... v2.1.0')
 console.log(new Date().toLocaleString(), '搶位活動: ', `https://www.tycs.com.tw/event/${eventNumber}`)
 console.log(new Date().toLocaleString(), `搶位時間: ${date.toLocaleString()}`)
 
